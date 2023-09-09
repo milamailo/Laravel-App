@@ -52,9 +52,9 @@ class CommentController extends Controller
             // Return a success responsetoken
             return response()->json([
                 'status' => true,
-                'message' => 'Comment Created Successfully'
+                'message' => 'Comment Created Successfully',
+                'comment' => $comment
             ], 200);
-
         } catch (\Throwable $th) {
             // Handle exceptions and return an error response
             return response()->json([
