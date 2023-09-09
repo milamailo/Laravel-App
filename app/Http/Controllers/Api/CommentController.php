@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CommentController extends Controller
 {
@@ -13,7 +14,15 @@ class CommentController extends Controller
      */
     public function index()
     {
-        return Comment::all();
+        try {
+            return Comment::all();
+        } catch (\Throwable $th) {
+            // Handle exceptions and return an error response
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -21,7 +30,38 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            // Validate user input data
+            $validateUser = Validator::make($request->all(), [
+                'body' => 'required',
+                'user_id' => 'required'
+            ]);
+
+            // Check if validation fails and return errors if so
+            if ($validateUser->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validateUser->errors()
+                ], 401);
+            }
+
+            // Create a new comment record in the database
+            $comment = Comment::create($request->all());
+
+            // Return a success responsetoken
+            return response()->json([
+                'status' => true,
+                'message' => 'Comment Created Successfully'
+            ], 200);
+
+        } catch (\Throwable $th) {
+            // Handle exceptions and return an error response
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 
     /**

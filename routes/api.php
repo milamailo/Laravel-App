@@ -21,4 +21,5 @@ Route::post('/login', [UserController::class, 'userLogin']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/comments', [CommentController::class, 'index']);
+    Route::post('/addComment', [CommentController::class, 'store']);
 });
