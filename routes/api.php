@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\CommentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 
@@ -20,7 +20,7 @@ Route::post('/login', [UserController::class, 'userLogin']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/test', function () {
-        return 'test';
-    });
+    Route::get('/comments', [CommentController::class, 'index']);
+    Route::post('/addComment', [CommentController::class, 'store']);
+    Route::get('/user/comments', [UserController::class,'getUserComments']);
 });
