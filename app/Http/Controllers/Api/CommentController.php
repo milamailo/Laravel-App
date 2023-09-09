@@ -49,7 +49,7 @@ class CommentController extends Controller
             // Create a new comment record in the database
             $comment = Comment::create($request->all());
 
-            // Return a success responsetoken
+            // Return a success response and comment
             return response()->json([
                 'status' => true,
                 'message' => 'Comment Created Successfully',
@@ -69,22 +69,6 @@ class CommentController extends Controller
      */
     public function show(string $id)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return 'Display the specified resource.';
     }
 }

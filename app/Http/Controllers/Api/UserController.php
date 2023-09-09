@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
@@ -92,6 +93,28 @@ class UserController extends Controller
                 'status' => true,
                 'message' => 'User Logged In Successfully',
                 'token' => $user->createToken("API TOKEN")->plainTextToken
+            ], 200);
+        } catch (\Throwable $th) {
+            // Handle exceptions and return an error response
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+    public function getUserComments(Request $request)
+    {
+        try {
+            // Get the authenticated user
+            $user = $request->user();
+
+            // Retrieve all comments associated with the user
+            $comments = Comment::where('user_id', $user->id)->get();
+            $user->comments = $comments;
+            return response()->json([
+                'status' => true,
+                'message' => 'User Comments Retrieved Successfully',
+                'user' => $user
             ], 200);
         } catch (\Throwable $th) {
             // Handle exceptions and return an error response
