@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
+use App\Models\Lesson;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 
 class UserController extends Controller
@@ -114,6 +116,39 @@ class UserController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'User Comments Retrieved Successfully',
+                'user' => $user
+            ], 200);
+        } catch (\Throwable $th) {
+            // Handle exceptions and return an error response
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getUserwatchedLessons(Request $request)
+    {
+        try {
+            // Get the authenticated user
+            $user = $request->user();
+
+            // Retrieve all watched lessons for the user
+            $watchedLessonIds = DB::table('lesson_user')
+                ->where('user_id', $user->id)
+                ->where('watched', true)
+                ->pluck('lesson_id')
+                ->toArray();
+
+            // Retrieve the actual lesson records for the watched lesson IDs
+            $watchedLessons = Lesson::whereIn('id', $watchedLessonIds)->get();
+
+            // Add the watched lessons to the user
+            $user->lessons = $watchedLessons;
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Watched Lessons Retrieved Successfully',
                 'user' => $user
             ], 200);
         } catch (\Throwable $th) {

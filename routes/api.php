@@ -24,4 +24,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('/comment', CommentController::class);
     Route::resource('/lesson', LessonController::class);
     Route::get('/user/comments', [UserController::class, 'getUserComments']);
+    Route::get('/user/lessons', [UserController::class, 'getUserwatchedLessons']);
 });
