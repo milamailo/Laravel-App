@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\CommentWritten;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use Illuminate\Http\Request;
@@ -48,12 +49,13 @@ class CommentController extends Controller
 
             // Create a new comment record in the database
             $comment = Comment::create($request->all());
+            $userWithComments = event(new CommentWritten($comment));
 
             // Return a success response and comment
             return response()->json([
                 'status' => true,
                 'message' => 'Comment Created Successfully',
-                'comment' => $comment
+                'user_with_comments' => $userWithComments
             ], 200);
         } catch (\Throwable $th) {
             // Handle exceptions and return an error response
