@@ -49,13 +49,13 @@ class CommentController extends Controller
 
             // Create a new comment record in the database
             $comment = Comment::create($request->all());
-            $userWithComments = event(new CommentWritten($comment));
+            $payload = event(new CommentWritten($comment));
 
             // Return a success response and comment
             return response()->json([
                 'status' => true,
                 'message' => 'Comment Created Successfully',
-                'user_with_comments' => $userWithComments
+                'payload' => $payload
             ], 200);
         } catch (\Throwable $th) {
             // Handle exceptions and return an error response

@@ -15,6 +15,7 @@ class NewCommentAdd
     {
         $comment = $event->comment;
         $userId = $comment->user_id;
+        $user = User::where('id', $userId)->first();
 
         // Check if UserAchievementsBadge record exists for the user
         $userAchievementsBadge = UserAchievementsBadge::where('user_id', $userId)->first();
@@ -37,10 +38,12 @@ class NewCommentAdd
         $userAchievementsBadge->save();
 
 
-        // Return the user including their comments
-        $user = User::where('id', $userId);
-        $user->comments = $comment;
+        //how to make payload be include user and comment
+        $payload = [
+            'user' => $user,
+            'comment' => $comment,
+        ];
 
-        return $user;
+        return $payload;
     }
 }
