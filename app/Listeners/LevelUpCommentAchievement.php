@@ -26,12 +26,21 @@ class LevelUpCommentAchievement
         $achievementType = $event->type;
 
         $userAchievementsBadge = UserAchievementsBadge::where('user_id', $user->id)->first();
-        // $userAchievementsBadge->comment_level += 1;
-        $userAchievementsBadge->save();
+
+        if ($userAchievementsBadge->total_comments != 1) {
+            Log::info($userAchievementsBadge->total_comments != 1);
+            Log::info($userAchievementsBadge->total_comments . ' ' . $userAchievementsBadge->comment_level);
+            $userAchievementsBadge->comment_level += 1;
+            $userAchievementsBadge->save();
+        }
+
         $achievementName = Achievements::where('type', $achievementType)
             ->where('level', $userAchievementsBadge->comment_level)
             ->pluck('name')
             ->first();
+
+
+
         return [
             'achievement_name' => $achievementName,
             'user' => $user
