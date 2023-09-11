@@ -2,10 +2,12 @@
 
 namespace App\Listeners;
 
-// use App\Events\AchievementUnlocked;
+use App\Events\CommentWritten;
 use App\Models\User;
 use App\Models\UserAchievementsBadge;
 use App\Models\Achievements;
+use Illuminate\Support\Facades\Log;
+
 
 class NewCommentAdd
 {
@@ -19,6 +21,7 @@ class NewCommentAdd
             $comment = $event->comment;
             $userId = $comment->user_id;
             $user = User::where('id', $userId)->first();
+            Log::info('NewCommentAdd listener executed for user: ' . $user->id);
 
             // Check if UserAchievementsBadge record exists for the user
             $userAchievementsBadge = UserAchievementsBadge::where('user_id', $userId)->first();
