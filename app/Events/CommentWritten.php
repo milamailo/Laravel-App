@@ -11,11 +11,10 @@ class CommentWritten
     use Dispatchable, SerializesModels;
 
     public $comment;
-
     /**
      * Create a new event instance.
      *
-     * @return void
+     * @return array
      */
     public function __construct(Comment $comment)
     {

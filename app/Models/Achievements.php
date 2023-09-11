@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Achievemenets extends Model
+class Achievements extends Model
 {
     use HasFactory;
 
@@ -18,6 +18,7 @@ class Achievemenets extends Model
         'type',
         'name',
         'level',
-        'min_points'
+        'min_points',
+        'max_points'
     ];
 }

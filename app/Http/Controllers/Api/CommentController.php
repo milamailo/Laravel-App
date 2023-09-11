@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\AchievementUnlocked;
+use App\Events\CommentWritten;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -30,6 +33,7 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
+        $payload = [];
         try {
             // Validate user input data
             $validateUser = Validator::make($request->all(), [
@@ -48,12 +52,20 @@ class CommentController extends Controller
 
             // Create a new comment record in the database
             $comment = Comment::create($request->all());
+            $commentWrittenEevent = event(new CommentWritten($comment));
+
+            $user = User::where('id', $comment->user_id)->first();
+            $cwePayload = $commentWrittenEevent[0];
+            if (isset($cwePayload['type'])) {
+                $payload['achievement_name'] = $cwePayload['type'];
+                $payload['user'] = $user;
+            }
 
             // Return a success response and comment
             return response()->json([
                 'status' => true,
                 'message' => 'Comment Created Successfully',
-                'comment' => $comment
+                'payload' => $payload
             ], 200);
         } catch (\Throwable $th) {
             // Handle exceptions and return an error response

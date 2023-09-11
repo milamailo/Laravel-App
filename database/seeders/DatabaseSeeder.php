@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Lesson;
-use App\Models\Achievemenets;
+use App\Models\Achievements;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
             ->count(20)
             ->create();
 
-        Achievemenets::factory()
+        Achievements::factory()
             ->count(14) // You can adjust the count as needed
             ->create();
     }
