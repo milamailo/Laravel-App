@@ -2,10 +2,12 @@
 
 namespace App\Listeners;
 
-// use App\Events\AchievementUnlocked;
+use App\Events\CommentWritten;
 use App\Models\User;
 use App\Models\UserAchievementsBadge;
 use App\Models\Achievements;
+use Illuminate\Support\Facades\Log;
+
 
 class NewCommentAdd
 {
@@ -40,8 +42,13 @@ class NewCommentAdd
 
             // Set type to payload to fired AchievementUnlocked event based on its total_comments
             $achievements = Achievements::where('type', 'comment')->get();
+            Log::info($achievements);
             foreach ($achievements as $achievement) {
+                Log::info($achievement->level == $userAchievementsBadge->comment_level);
+                Log::info($achievement->level . ' ' . $userAchievementsBadge->comment_level);
                 if (($achievement->level == $userAchievementsBadge->comment_level)) {
+                    Log::info($achievement->max_points >= $userAchievementsBadge->total_comments);
+                    Log::info($achievement->max_points . ' ' . $userAchievementsBadge->total_comments);
                     if ($achievement->max_points >= $userAchievementsBadge->total_comments) {
                         $payload = [
                             'user' => $user,
