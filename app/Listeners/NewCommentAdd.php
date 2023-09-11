@@ -39,22 +39,28 @@ class NewCommentAdd
 
             // Update the comment_level and total_comments based on user's comments
             $userAchievementsBadge->total_comments += 1;
+            $userAchievementsBadge->save();
 
             // Set type to payload to fired AchievementUnlocked event based on its total_comments
             $achievements = Achievements::where('type', 'comment')->get();
-            Log::info($achievements);
+            Log::info($userAchievementsBadge);
             foreach ($achievements as $achievement) {
-                Log::info($achievement->level == $userAchievementsBadge->comment_level);
-                Log::info($achievement->level . ' ' . $userAchievementsBadge->comment_level);
+
                 if (($achievement->level == $userAchievementsBadge->comment_level)) {
-                    Log::info($achievement->max_points >= $userAchievementsBadge->total_comments);
+                    Log::info(($achievement->max_points >= $userAchievementsBadge->total_comments));
                     Log::info($achievement->max_points . ' ' . $userAchievementsBadge->total_comments);
+                    if (($userAchievementsBadge->comment_level == 1) && ($userAchievementsBadge->total_comments == 1)) {
+                        $payload = [
+                            'type' => 'comment',
+                            'user' => $user,
+                        ];
+                        break;
+                    }
                     if ($achievement->max_points >= $userAchievementsBadge->total_comments) {
                         $payload = [
                             'user' => $user,
                         ];
                     } else {
-                        $userAchievementsBadge->comment_level += 1;
                         $payload = [
                             'type' => 'comment',
                             'user' => $user,
@@ -63,8 +69,6 @@ class NewCommentAdd
                     break;
                 }
             }
-
-            $userAchievementsBadge->save();
 
             return $payload;
         } catch (\Throwable $th) {
