@@ -21,7 +21,6 @@ class NewCommentAdd
             $comment = $event->comment;
             $userId = $comment->user_id;
             $user = User::where('id', $userId)->first();
-            Log::info('NewCommentAdd listener executed for user: ' . $user->id);
 
             // Check if UserAchievementsBadge record exists for the user
             $userAchievementsBadge = UserAchievementsBadge::where('user_id', $userId)->first();
@@ -43,8 +42,13 @@ class NewCommentAdd
 
             // Set type to payload to fired AchievementUnlocked event based on its total_comments
             $achievements = Achievements::where('type', 'comment')->get();
+            Log::info($achievements);
             foreach ($achievements as $achievement) {
+                Log::info($achievement->level == $userAchievementsBadge->comment_level);
+                Log::info($achievement->level . ' ' . $userAchievementsBadge->comment_level);
                 if (($achievement->level == $userAchievementsBadge->comment_level)) {
+                    Log::info($achievement->max_points >= $userAchievementsBadge->total_comments);
+                    Log::info($achievement->max_points . ' ' . $userAchievementsBadge->total_comments);
                     if ($achievement->max_points >= $userAchievementsBadge->total_comments) {
                         $payload = [
                             'user' => $user,

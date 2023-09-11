@@ -24,15 +24,14 @@ class LevelUpCommentAchievement
     {
         $user = $event->user;
         $achievementType = $event->type;
-        Log::info('1 LevelUpCommentAchievement listener executed for user: ' . $achievementType);
 
         $userAchievementsBadge = UserAchievementsBadge::where('user_id', $user->id)->first();
-        Log::info('2 LevelUpCommentAchievement listener executed for user: ' . $userAchievementsBadge);
-        $achievementName = Achievements::where('level', $userAchievementsBadge->comment_level)
-            ->where('type', $achievementType)
+        // $userAchievementsBadge->comment_level += 1;
+        $userAchievementsBadge->save();
+        $achievementName = Achievements::where('type', $achievementType)
+            ->where('level', $userAchievementsBadge->comment_level)
             ->pluck('name')
             ->first();
-        Log::info('3 LevelUpCommentAchievement listener executed for achievementName: ' . $achievementName);
         return [
             'achievement_name' => $achievementName,
             'user' => $user

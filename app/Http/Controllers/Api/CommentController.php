@@ -60,13 +60,10 @@ class CommentController extends Controller
 
             $commentWrittenEevent = event(new CommentWritten($comment));
             $achievementType = $commentWrittenEevent[0];
-            // Log::info('$achievementType');
-            // Log::info($achievementType);
+
             if (isset($achievementType['type'])) {
                 $user = User::where('id', $comment->user_id)->first();
                 $achievementUnlockEvent = event(new AchievementUnlockEvent($user, $achievementType['type']));
-                Log::info('CommentController->store->isset:');
-                Log::info($achievementType['type']);
                 $payload = $achievementUnlockEvent[0];
                 $response['payload'] = $payload;
             }
