@@ -36,6 +36,9 @@ class NewCommentAdd
                     'badge_level' => 1,
                 ]);
             }
+            if ($userAchievementsBadge->comment_level == 0) {
+                $userAchievementsBadge->comment_level = 1;
+            }
 
             // Update the total_comments based on user's comments
             $userAchievementsBadge->total_comments += 1;
@@ -43,11 +46,9 @@ class NewCommentAdd
 
             // Set type to payload to fired AchievementUnlocked event based on its total_comments
             $achievements = Achievements::where('type', 'comment')->get();
-            Log::info($userAchievementsBadge);
             foreach ($achievements as $achievement) {
 
                 if (($achievement->level == $userAchievementsBadge->comment_level)) {
-                    Log::info(($achievement->max_points >= $userAchievementsBadge->total_comments));
                     if (($userAchievementsBadge->comment_level == 1) && ($userAchievementsBadge->total_comments == 1)) {
                         $payload = [
                             'type' => 'comment',

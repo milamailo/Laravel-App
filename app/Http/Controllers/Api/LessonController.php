@@ -10,7 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 
 class LessonController extends Controller
 {
@@ -60,8 +60,8 @@ class LessonController extends Controller
                 'lesson_id' => $lessonId,
                 'watched' => true
             ]);
-
-            // Event fired every time a comment added
+            Log::info($userId . ' ' . $lessonId);
+            // Event .fired every time a comment added
             $user = User::where('id', $userId)->first();
             $lesson = Lesson::where('id', $lessonId)->first();
             $lessonWatchedEevent = event(new LessonWatched(
@@ -77,11 +77,8 @@ class LessonController extends Controller
                 $response['payload'] = $payload;
             }
 
-            // Return a success response
-            return response()->json([
-                'status' => true,
-                'message' => 'Watched Lesson Add Successfully'
-            ], 200);
+            // Return a success response and payload
+            return response()->json($response, 200);
         } catch (\Throwable $th) {
             // Handle exceptions and return an error response
             return response()->json([

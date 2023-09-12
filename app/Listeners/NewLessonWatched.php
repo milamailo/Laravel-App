@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\LessonWatched;
 use App\Models\Achievements;
 use App\Models\UserAchievementsBadge;
+use Illuminate\Support\Facades\Log;
 
 class NewLessonWatched
 {
@@ -34,11 +35,14 @@ class NewLessonWatched
                 $userAchievementsBadge = UserAchievementsBadge::create([
                     'user_id' => $user->id,
                     'comment_level' => 0,
-                    'Lesson_level' => 1,
+                    'lesson_level' => 1,
                     'total_comments' => 0,
                     'total_lessons' => 0,
                     'badge_level' => 1,
                 ]);
+            }
+            if ($userAchievementsBadge->lesson_level == 0) {
+                $userAchievementsBadge->lesson_level = 1;
             }
 
             // Update the total_lessons based on user's comments
@@ -48,8 +52,8 @@ class NewLessonWatched
             // Set type to payload to fired AchievementUnlocked event based on its total_lessons
             $achievements = Achievements::where('type', 'lesson')->get();
             foreach ($achievements as $achievement) {
-                if (($achievement->level == $userAchievementsBadge->Lesson_level)) {
-                    if (($userAchievementsBadge->Lesson_level == 1) && ($userAchievementsBadge->total_lessons == 1)) {
+                if (($achievement->level == $userAchievementsBadge->lesson_level)) {
+                    if (($userAchievementsBadge->lesson_level == 1) && ($userAchievementsBadge->total_lessons == 1)) {
                         $payload = [
                             'type' => 'lesson',
                             'user' => $user,
