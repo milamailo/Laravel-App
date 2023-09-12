@@ -58,14 +58,13 @@ class CommentController extends Controller
 
             // Create a new comment record in the database
             $comment = Comment::create($request->all());
-
+            $user = User::where('id', $comment->user_id)->first();
             // Event fired every time a comment added
             $commentWrittenEevent = event(new CommentWritten($comment));
             $achievementType = $commentWrittenEevent[0];
 
             // Event fired every time a comment or lesson watched achievement achieve
             if (isset($achievementType['type'])) {
-                $user = User::where('id', $comment->user_id)->first();
                 $achievementUnlockEvent = event(new AchievementUnlockEvent($user, $achievementType['type']));
                 $payload = $achievementUnlockEvent[0];
                 $response['payload'] = $payload;
@@ -73,10 +72,14 @@ class CommentController extends Controller
 
             // Event fired Badge achievement
             $badgeName = event(new BadgeUnlockedEvent($user));
-            if (isset($badgeName['badge_name'])) {
-                $response['payload']['badgeName'] = $badgeName;
+            if (isset($badgeName[0]['badge_name'])) {
+                if ($badgeName[0]['badge_name']) {
+                    $response['payload']['badge_name'] = $badgeName[0]['badge_name'];
+                }
             }
-
+            if (!count($payload)) {
+                unset($response['payload']);
+            }
             // Return a success response and payload
             return response()->json($response, 200);
         } catch (\Throwable $th) {

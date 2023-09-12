@@ -35,6 +35,11 @@ class LessonController extends Controller
      */
     public function store(Request $request)
     {
+        $payload = [];
+        $response = [
+            'status' => true,
+            'message' => 'Watched Lessen Added Successfully'
+        ];
         try {
             // Validate user input data
             $validateUser = Validator::make($request->all(), [
@@ -80,10 +85,15 @@ class LessonController extends Controller
 
             // Event fired Badge achievement
             $badgeName = event(new BadgeUnlockedEvent($user));
-            if (isset($badgeName['badge_name'])) {
-                $response['payload']['badgeName'] = $badgeName;
+            if (isset($badgeName[0]['badge_name'])) {
+                if ($badgeName[0]['badge_name']) {
+                    $response['payload']['badge_name'] = $badgeName[0]['badge_name'];
+                }
             }
 
+            if (!count($payload)) {
+                unset($response['payload']);
+            }
             // Return a success response and payload
             return response()->json($response, 200);
         } catch (\Throwable $th) {
