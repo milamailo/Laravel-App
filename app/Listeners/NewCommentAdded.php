@@ -9,7 +9,7 @@ use App\Models\Achievements;
 use Illuminate\Support\Facades\Log;
 
 
-class NewCommentAdd
+class NewCommentAdded
 {
     /**
      * Handle the event.

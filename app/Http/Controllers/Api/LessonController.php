@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Events\AchievementUnlockEvent;
+use App\Events\BadgeUnlockedEvent;
 use App\Events\LessonWatched;
 use App\Http\Controllers\Controller;
 use App\Models\Lesson;
@@ -34,6 +35,11 @@ class LessonController extends Controller
      */
     public function store(Request $request)
     {
+        $payload = [];
+        $response = [
+            'status' => true,
+            'message' => 'Watched Lessen Added Successfully'
+        ];
         try {
             // Validate user input data
             $validateUser = Validator::make($request->all(), [
@@ -60,7 +66,7 @@ class LessonController extends Controller
                 'lesson_id' => $lessonId,
                 'watched' => true
             ]);
-            Log::info($userId . ' ' . $lessonId);
+            // Log::info($userId . ' ' . $lessonId);
             // Event .fired every time a comment added
             $user = User::where('id', $userId)->first();
             $lesson = Lesson::where('id', $lessonId)->first();
@@ -77,6 +83,17 @@ class LessonController extends Controller
                 $response['payload'] = $payload;
             }
 
+            // Event fired Badge achievement
+            $badgeName = event(new BadgeUnlockedEvent($user));
+            if (isset($badgeName[0]['badge_name'])) {
+                if ($badgeName[0]['badge_name']) {
+                    $response['payload']['badge_name'] = $badgeName[0]['badge_name'];
+                }
+            }
+
+            if (!count($payload)) {
+                unset($response['payload']);
+            }
             // Return a success response and payload
             return response()->json($response, 200);
         } catch (\Throwable $th) {

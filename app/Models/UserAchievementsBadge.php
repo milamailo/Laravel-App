@@ -14,7 +14,7 @@ class UserAchievementsBadge extends Model
     protected $fillable = [
         'user_id',
         'comment_level',
-        'Lesson_level',
+        'lesson_level',
         'total_comments',
         'total_lessons',
         'badge_level',
@@ -27,6 +27,6 @@ class UserAchievementsBadge extends Model
      */
     public function getTotalAchievements()
     {
-        return $this->Lesson_level + $this->comment_level;
+        return $this->lesson_level + $this->comment_level;
     }
 }
