@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\AchievementUnlockEvent;
+use App\Events\LessonWatched;
 use App\Http\Controllers\Controller;
 use App\Models\Lesson;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -58,6 +61,21 @@ class LessonController extends Controller
                 'watched' => true
             ]);
 
+            // Event fired every time a comment added
+            $user = User::where('id', $userId)->first();
+            $lesson = Lesson::where('id', $lessonId)->first();
+            $lessonWatchedEevent = event(new LessonWatched(
+                $lesson,
+                $user
+            ));
+            $achievementType = $lessonWatchedEevent[0];
+
+            // Event fired every time a comment or lesson watched achievement achieve
+            if (isset($achievementType['type'])) {
+                $achievementUnlockEvent = event(new AchievementUnlockEvent($user, $achievementType['type']));
+                $payload = $achievementUnlockEvent[0];
+                $response['payload'] = $payload;
+            }
 
             // Return a success response
             return response()->json([

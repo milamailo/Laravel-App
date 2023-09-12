@@ -16,8 +16,8 @@ class NewCommentAdd
      */
     public function handle(object $event)
     {
+        $payload = [];
         try {
-            $payload = [];
             $comment = $event->comment;
             $userId = $comment->user_id;
             $user = User::where('id', $userId)->first();
@@ -37,7 +37,7 @@ class NewCommentAdd
                 ]);
             }
 
-            // Update the comment_level and total_comments based on user's comments
+            // Update the total_comments based on user's comments
             $userAchievementsBadge->total_comments += 1;
             $userAchievementsBadge->save();
 
@@ -48,7 +48,6 @@ class NewCommentAdd
 
                 if (($achievement->level == $userAchievementsBadge->comment_level)) {
                     Log::info(($achievement->max_points >= $userAchievementsBadge->total_comments));
-                    Log::info($achievement->max_points . ' ' . $userAchievementsBadge->total_comments);
                     if (($userAchievementsBadge->comment_level == 1) && ($userAchievementsBadge->total_comments == 1)) {
                         $payload = [
                             'type' => 'comment',
