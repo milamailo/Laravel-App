@@ -2,15 +2,21 @@
 
 namespace App\Listeners;
 
-use App\Events\CommentWritten;
-use App\Models\User;
-use App\Models\UserAchievementsBadge;
+use App\Events\LessonWatched;
 use App\Models\Achievements;
+use App\Models\UserAchievementsBadge;
 use Illuminate\Support\Facades\Log;
 
-
-class NewCommentAdd
+class NewLessonWatched
 {
+    /**
+     * Create the event listener.
+     */
+    public function __construct()
+    {
+        //
+    }
+
     /**
      * Handle the event.
      */
@@ -18,58 +24,55 @@ class NewCommentAdd
     {
         $payload = [];
         try {
-            $comment = $event->comment;
-            $userId = $comment->user_id;
-            $user = User::where('id', $userId)->first();
+            $user = $event->user;
+            $lesson = $event->lesson;
 
             // Check if UserAchievementsBadge record exists for the user
-            $userAchievementsBadge = UserAchievementsBadge::where('user_id', $userId)->first();
+            $userAchievementsBadge = UserAchievementsBadge::where('user_id', $user->id)->first();
 
             // If the record does not exist, create a new one
             if (!$userAchievementsBadge) {
                 $userAchievementsBadge = UserAchievementsBadge::create([
-                    'user_id' => $userId,
-                    'comment_level' => 1,
-                    'Lesson_level' => 0,
+                    'user_id' => $user->id,
+                    'comment_level' => 0,
+                    'lesson_level' => 1,
                     'total_comments' => 0,
                     'total_lessons' => 0,
                     'badge_level' => 1,
                 ]);
             }
-            if ($userAchievementsBadge->comment_level == 0) {
-                $userAchievementsBadge->comment_level = 1;
+            if ($userAchievementsBadge->lesson_level == 0) {
+                $userAchievementsBadge->lesson_level = 1;
             }
 
-            // Update the total_comments based on user's comments
-            $userAchievementsBadge->total_comments += 1;
+            // Update the total_lessons based on user's comments
+            $userAchievementsBadge->total_lessons += 1;
             $userAchievementsBadge->save();
 
-            // Set type to payload to fired AchievementUnlocked event based on its total_comments
-            $achievements = Achievements::where('type', 'comment')->get();
+            // Set type to payload to fired AchievementUnlocked event based on its total_lessons
+            $achievements = Achievements::where('type', 'lesson')->get();
             foreach ($achievements as $achievement) {
-
-                if (($achievement->level == $userAchievementsBadge->comment_level)) {
-                    if (($userAchievementsBadge->comment_level == 1) && ($userAchievementsBadge->total_comments == 1)) {
+                if (($achievement->level == $userAchievementsBadge->lesson_level)) {
+                    if (($userAchievementsBadge->lesson_level == 1) && ($userAchievementsBadge->total_lessons == 1)) {
                         $payload = [
-                            'type' => 'comment',
+                            'type' => 'lesson',
                             'user' => $user,
                         ];
                         break;
                     }
-                    if ($achievement->max_points >= $userAchievementsBadge->total_comments) {
+                    if ($achievement->max_points >= $userAchievementsBadge->total_lessons) {
                         $payload = [
                             'user' => $user,
                         ];
                     } else {
                         $payload = [
-                            'type' => 'comment',
+                            'type' => 'lesson',
                             'user' => $user,
                         ];
                     }
                     break;
                 }
             }
-
             return $payload;
         } catch (\Throwable $th) {
             // Handle exceptions and return an error response

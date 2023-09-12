@@ -7,8 +7,10 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Events\CommentWritten;
+use App\Events\LessonWatched;
 use App\Listeners\LevelUpAchievements;
 use App\Listeners\NewCommentAdd;
+use App\Listeners\NewLessonWatched;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -26,8 +28,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         AchievementUnlockEvent::class => [
             LevelUpAchievements::class,
-        ]
-
+        ],
+        LessonWatched::class => [
+            NewLessonWatched::class,
+        ],
     ];
 
     /**

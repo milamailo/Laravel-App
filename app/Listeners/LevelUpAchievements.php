@@ -38,6 +38,7 @@ class LevelUpAchievements
 
         // Fetch the user's achievements badge from the database using the user's ID
         $userAchievementsBadge = UserAchievementsBadge::where('user_id', $user->id)->first();
+        Log::info('$userAchievementsBadge: ' . $userAchievementsBadge);
         if ($userAchievementsBadge->$total != 1) {
             $userAchievementsBadge->$level += 1;
             $userAchievementsBadge->save();
@@ -48,6 +49,9 @@ class LevelUpAchievements
             ->where('level', $userAchievementsBadge->$level)
             ->pluck('name')
             ->first();
+
+        Log::info($achievementName);
+
 
         return [
             'achievement_name' => $achievementName,

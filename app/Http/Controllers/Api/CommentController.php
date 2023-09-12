@@ -58,9 +58,11 @@ class CommentController extends Controller
             // Create a new comment record in the database
             $comment = Comment::create($request->all());
 
+            // Event fired every time a comment added
             $commentWrittenEevent = event(new CommentWritten($comment));
             $achievementType = $commentWrittenEevent[0];
 
+            // Event fired every time a comment or lesson watched achievement achieve
             if (isset($achievementType['type'])) {
                 $user = User::where('id', $comment->user_id)->first();
                 $achievementUnlockEvent = event(new AchievementUnlockEvent($user, $achievementType['type']));
