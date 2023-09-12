@@ -7,7 +7,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Events\CommentWritten;
-use App\Listeners\LevelUpCommentAchievement;
+use App\Listeners\LevelUpAchievements;
 use App\Listeners\NewCommentAdd;
 
 class EventServiceProvider extends ServiceProvider
@@ -25,7 +25,7 @@ class EventServiceProvider extends ServiceProvider
             NewCommentAdd::class,
         ],
         AchievementUnlockEvent::class => [
-            LevelUpCommentAchievement::class,
+            LevelUpAchievements::class,
         ]
 
     ];
