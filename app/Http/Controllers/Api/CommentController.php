@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Events\AchievementUnlockEvent;
+use App\Events\BadgeUnlockedEvent;
 use App\Events\CommentWritten;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
@@ -68,6 +69,12 @@ class CommentController extends Controller
                 $achievementUnlockEvent = event(new AchievementUnlockEvent($user, $achievementType['type']));
                 $payload = $achievementUnlockEvent[0];
                 $response['payload'] = $payload;
+            }
+
+            // Event fired Badge achievement
+            $badgeName = event(new BadgeUnlockedEvent($user));
+            if (isset($badgeName['badge_name'])) {
+                $response['payload']['badgeName'] = $badgeName;
             }
 
             // Return a success response and payload
