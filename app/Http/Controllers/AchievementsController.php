@@ -26,7 +26,12 @@ class AchievementsController extends Controller
             $unlockedComments = [];
             $unlockedlessons = [];
             $nextAchievementName = [];
-
+            $len = 0;
+            if (count($comments) > 0) {
+                $len = count($comments);
+            } else {
+                $len = count($lessons);
+            }
             for ($i = 0; $i < count($badges); $i++) {
                 if ($badges[$i]->level == $userAchievementsBadge->badge_level) {
                     $currentBadge = $badges[$i]->name;
@@ -35,17 +40,22 @@ class AchievementsController extends Controller
                     break;
                 }
             }
-
-            for ($i = 0; $i < count($comments) || $i < count($lessons); $i++) {
+            if ($userAchievementsBadge->comment_level < 1) {
+                $unlockedComments = array_slice($comments->toArray(), 0);
+            }
+            if ($userAchievementsBadge->lesson_level < 1) {
+                $unlockedlessons = array_slice($lessons->toArray(), 0);
+            }
+            for ($i = 0; $i < $len; $i++) {
                 if ($comments[$i]->level == $userAchievementsBadge->comment_level) {
                     $unlockedComments = array_slice($comments->toArray(), $i + 1);
-                    array_push($nextAchievementName, $unlockedComments[0]['name']);
                 }
                 if ($lessons[$i]->level == $userAchievementsBadge->lesson_level) {
                     $unlockedlessons = array_slice($lessons->toArray(), $i + 1);
-                    array_push($nextAchievementName, $unlockedlessons[0]['name']);
                 }
             }
+            array_push($nextAchievementName, $unlockedComments[0]['name']);
+            array_push($nextAchievementName, $unlockedlessons[0]['name']);
             $unlockedAchievements = array_merge($unlockedComments, $unlockedlessons);
 
             for ($i = 0; $i < count($unlockedAchievements); $i++) {
