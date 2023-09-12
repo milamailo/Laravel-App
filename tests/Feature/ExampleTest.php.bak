@@ -1,0 +1,101 @@
+<?php
+
+namespace Tests\Feature;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
+use App\Models\User;
+use Laravel\Sanctum\Sanctum;
+
+class UserControllerTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function testCreateUser()
+    {
+        // Create a fake user data
+        $userData = [
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'password' => 'password123',
+        ];
+
+        // Send a POST request to the createUser endpoint
+        $response = $this->json('POST', '/api/create-user', $userData);
+
+        // Assert that the response status code is 201 (Created)
+        $response->assertStatus(201);
+
+        // Assert that the user was created in the database
+        $this->assertDatabaseHas('users', ['email' => 'john@example.com']);
+    }
+
+    public function testUserLogin()
+    {
+        // Create a user in the database
+        $user = User::factory()->create([
+            'email' => 'jane@example.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        // Create login data
+        $loginData = [
+            'email' => 'jane@example.com',
+            'password' => 'password123',
+        ];
+
+        // Send a POST request to the userLogin endpoint
+        $response = $this->json('POST', '/api/user-login', $loginData);
+
+        // Assert that the response status code is 200 (OK)
+        $response->assertStatus(200);
+
+        // Assert that the response contains a token
+        $response->assertJsonStructure(['token']);
+
+        // Optionally, you can assert other things about the response
+    }
+
+    public function testGetUserComments()
+    {
+        // Create a user and authenticate using Sanctum
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        // Add user comments to the database (replace with your own data)
+        // Example: Comment::create(['user_id' => $user->id, 'body' => 'Comment 1']);
+
+        // Send a GET request to the getUserComments endpoint
+        $response = $this->json('GET', '/api/get-user-comments');
+
+        // Assert that the response status code is 200 (OK)
+        $response->assertStatus(200);
+
+        // Optionally, assert the response contains expected data
+        // Example: $response->assertJson(['data' => [['body' => 'Comment 1']]]);
+
+        // Add more assertions as needed
+    }
+
+    public function testGetUserwatchedLessons()
+    {
+        // Create a user and authenticate using Sanctum
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        // Add user watched lessons to the database (replace with your own data)
+        // Example: Lesson::create(['user_id' => $user->id, 'lesson_id' => 1]);
+
+        // Send a GET request to the getUserwatchedLessons endpoint
+        $response = $this->json('GET', '/api/get-user-watched-lessons');
+
+        // Assert that the response status code is 200 (OK)
+        $response->assertStatus(200);
+
+        // Optionally, assert the response contains expected data
+        // Example: $response->assertJson(['data' => [['lesson_id' => 1]]]);
+
+        // Add more assertions as needed
+    }
+}
