@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -176,13 +176,13 @@ class UserControllerTest extends TestCase
             'email' => 'milad@example.com',
             'password' => 'incorrect-password',
         ];
-    
+
         // Create a user in the database
         $user = User::factory()->create([
             'email' => 'milad@example.com',
             'password' => bcrypt('pass1234'),
         ]);
-    
+
         // Send a POST request to the userLogin endpoint with incorrect password
         // Assert that the response status code is 401 (Unauthorized)
         $response = $this->json('POST', '/api/login', $loginData);
@@ -192,7 +192,7 @@ class UserControllerTest extends TestCase
             'message' => 'Email & Password do not match with our records.',
         ]);
     }
-    
+
     // getUserComments tests
     public function testGetUserComments()
     {
@@ -218,6 +218,30 @@ class UserControllerTest extends TestCase
         ]);
     }
 
+    public function testGetUserCommentsNoComments()
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        // Send a GET request to the getUserComments endpoint
+        // Assert that the response status code is 200 
+        $response = $this->json('GET', '/api/user/comments');
+        $response->assertStatus(200);
+        $response->assertJson([
+            'user' => [
+                'comments' => [],
+            ],
+        ]);
+    }
+
+    public function testGetUserCommentsUnauthorized()
+    {
+        // Send a GET request to the getUserComments endpoint without authenticating
+        // Assert that the response status code is 401 (Unauthorized)
+        $response = $this->json('GET', '/api/user/comments');
+        $response->assertStatus(401);
+    }
+
     // getUserwatchedLessons tests
     public function testGetUserwatchedLessons()
     {
@@ -240,5 +264,29 @@ class UserControllerTest extends TestCase
                 'lessons' => [],
             ],
         ]);
+    }
+
+    public function testGetUserwatchedLessonsNoLessons()
+    {
+        // Create a user and authenticate using Sanctum
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+        // Send a GET request to the getUserwatchedLessons endpoint
+        // Assert that the response status code is 200 
+        $response = $this->json('GET', '/api/user/lessons');
+        $response->assertStatus(200);
+        $response->assertJson([
+            'user' => [
+                'lessons' => [],
+            ],
+        ]);
+    }
+
+    public function testGetUserwatchedLessonsUnauthorized()
+    {
+        // Send a GET request to the getUserwatchedLessons endpoint without authenticating
+        // Assert that the response status code is 401 (Unauthorized)
+        $response = $this->json('GET', '/api/user/lessons');
+        $response->assertStatus(401);
     }
 }
