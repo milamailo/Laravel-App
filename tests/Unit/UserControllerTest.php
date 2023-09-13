@@ -7,7 +7,9 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\Comment;
 use App\Models\Lesson;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
+use Mockery;
 
 class UserControllerTest extends TestCase
 {
@@ -60,10 +62,19 @@ class UserControllerTest extends TestCase
         // Send a GET request to the getUserComments endpoint
         // Assert that the response status code is 200 (OK)
         // Assert the response contains expected data
-        // $comment = Comment::create(['user_id' => $user->id, 'body' => 'Test Comment']);
+        $comment = Comment::create(['user_id' => $user->id, 'body' => 'Test Comment']);
         $response = $this->json('GET', '/api/user/comments');
         $response->assertStatus(200);
-        // $response->assertJson(['user_id' => $user->id,'body' => 'Test Comment']);
+        $response->assertJson([
+            'user' => [
+                'comments' => [
+                    [
+                        'user_id' => $user->id,
+                        'body' => 'Test Comment',
+                    ],
+                ],
+            ],
+        ]);
     }
 
     public function testGetUserwatchedLessons()
@@ -76,9 +87,17 @@ class UserControllerTest extends TestCase
         // Send a GET request to the getUserwatchedLessons endpoint
         // Assert that the response status code is 200 (OK)
         // Assert the response contains expected data
-        Lesson::create(['user_id' => $user->id, 'lesson_id' => 1]);
+        $this->seed();
+        DB::table('lesson_user')->insert([
+            'user_id' => $user->id,
+            'lesson_id' => 1,
+        ]);
         $response = $this->json('GET', '/api/user/lessons');
         $response->assertStatus(200);
-        // $response->assertJson(['payload' => [['lesson_id' => 1]]]);
+        $response->assertJson([
+            'user' => [
+                'lessons' => [],
+            ],
+        ]);
     }
 }
