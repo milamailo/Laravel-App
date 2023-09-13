@@ -1,66 +1,114 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Back-end Developer Test
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Introduction
 
-## About Laravel
+The Course Portal Achievements System is a feature within our course portal platform that enhances the user experience by allowing users to unlock achievements and earn badges based on their interactions with the platform. This README provides an overview of the functionality and concepts behind this system.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Installation
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. Clone the Repo
+    - HTTPS:
+    ```md
+    git clone https://github.com/miladesmailpour/developer-test.git
+    ```
+    - SSH:
+    ```md
+    git clone git@github.com:miladesmailpour/developer-test.git
+    ```
+2. Install the Composer
+    ```md
+    composer install
+    ```
+3. Update the database details in .env
+    ```md
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=laravel
+    DB_USERNAME=root
+    DB_PASSWORD= password \\Repalce With your password
+    ```
+4. Migrate the database
+    ```md
+    php artisan migrate
+    ```
+5. Seed the databsase
+    ```md
+    php artisan db:seed
+    ```
+6. Run the server
+    ```md
+    php artisan server
+    ```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Functionality
 
-## Learning Laravel
+### Event System
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+The Achievements System is event-driven. It listens for specific user events and triggers the unlocking of achievements and badges accordingly. The two main events are:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+1. `LessonWatched`: Fired when a user watches a lesson.
+2. `CommentWritten`: Fired when a user writes a comment.
+3. `AchievementUnlockEvent`: Fired when a Achievement Unlock "comment or lesson".
+4. `BadgeUnlockedEvent`: Fired when a Badge Unlocked.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Listeners
 
-## Laravel Sponsors
+1. `LevelUpAchievements`: Listen to New Achievement Unlock "comment or lesson".
+2. `NewBadgeAchieved`: Listen to New Badge Unlock.
+3. `NewCommentAdded`: Listen to New Comment adedd.
+4. `NewLessonWatched`: Listen to New Lesson Watched.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### Models
 
-### Premium Partners
+1. `Achievements`
+2. `Comment`
+3. `Lesson`
+4. `User`
+5. `UserAchievementsBadge`
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+### Controllers
 
-## Contributing
+1. `CommentController`
+2. `LessonController`
+3. `UserController`
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Routes
 
-## Code of Conduct
+#### No Require Authentication
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. `/register`
+2. `/login`
 
-## Security Vulnerabilities
+#### Authentication Require
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3. `/comment`
+4. `/lesson`
+5. `/user/comments`
+6. `/user/lessons`
 
-## License
+### Achievements Endpoint
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The system provides an API endpoint to retrieve information about a user's achievements. The endpoint, `users/{user}/achievements`, returns the following:
+
+-   `unlocked_achievements`: An array of the user's unlocked achievements by name.
+-   `next_available_achievements`: An array of the next achievements the user can unlock by name.
+-   `current_badge`: The name of the user's current badge.
+-   `next_badge`: The name of the next badge the user can earn.
+-   `remaining_to_unlock_next_badge`: The number of additional achievements the user must unlock to earn the next badge.
+
+## Concepts
+
+### Event-Driven Architecture
+
+The Achievements System follows an event-driven architecture. It listens for user events and reacts to them by unlocking achievements and badges. This decoupled approach allows for flexibility and scalability in handling user interactions.
+
+### User-Centric Design
+
+The system focuses on enhancing the user experience by providing tangible rewards for engaging with the platform. Achievements and badges serve as incentives for users to watch more lessons and write more comments, increasing their interaction with the portal.
+
+## Conclusion
+
+The Course Portal Achievements System is a user-centric feature that by unlocking achievements and earning badges, users are encouraged to participate more actively in the learning process. The event-driven architecture ensures seamless integration with existing platform functionalities.
+
+[Milad Esmaeelpour](https://github.com/miladesmailpour)
