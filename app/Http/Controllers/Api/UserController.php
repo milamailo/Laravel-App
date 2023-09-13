@@ -36,7 +36,7 @@ class UserController extends Controller
                     'status' => false,
                     'message' => 'Validation error',
                     'errors' => $validateUser->errors()
-                ], 401);
+                ], 422);
             }
 
             // Create a new user record in the database
