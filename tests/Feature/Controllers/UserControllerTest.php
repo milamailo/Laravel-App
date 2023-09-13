@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Controllers;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -253,9 +253,11 @@ class UserControllerTest extends TestCase
         // Send a GET request to the getUserwatchedLessons endpoint
         // Assert that the response status code is 200
         $this->seed();
+        $lesson = Lesson::factory()->create();
+
         DB::table('lesson_user')->insert([
             'user_id' => $user->id,
-            'lesson_id' => 1,
+            'lesson_id' => $lesson->id,
         ]);
         $response = $this->json('GET', '/api/user/lessons');
         $response->assertStatus(200);
