@@ -38,7 +38,7 @@ The Course Portal Achievements System is a feature within our course portal plat
     ```
 6. Run the server
     ```md
-    php artisan server
+    php artisan serve
     ```
 
 ## Functionality
