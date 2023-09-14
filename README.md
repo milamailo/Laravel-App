@@ -75,7 +75,7 @@ The Achievements System is event-driven. It listens for specific user events and
 
 ### Routes
 
-#### No Require Authentication
+#### Without Authentication
 
 1. `/register`
 2. `/login`
