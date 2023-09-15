@@ -40,6 +40,8 @@ The Course Portal Achievements System is a feature within our course portal plat
     ```md
     php artisan serve
     ```
+7. APIs ready to use
+    - create a user or login then use the token for the ApIs required Authntication 
 
 ## Functionality
 
