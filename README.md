@@ -113,4 +113,4 @@ The system focuses on enhancing the user experience by providing tangible reward
 
 The Course Portal Achievements System is a user-centric feature that by unlocking achievements and earning badges, users are encouraged to participate more actively in the learning process. The event-driven architecture ensures seamless integration with existing platform functionalities.
 
-[Milad Esmaeelpour](https://github.com/miladesmailpour)
+[Milad](https://github.com/miladesmailpour)
